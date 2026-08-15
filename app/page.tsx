@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Image from "next/image";
 import HeroCard from "@/components/HeroCard";
 import StatTile from "@/components/StatTile";
 import ConversionsChart from "@/components/ConversionsChart";
@@ -8,7 +9,7 @@ import RangePicker from "@/components/RangePicker";
 import RefreshButton from "@/components/RefreshButton";
 import StatusBanner from "@/components/StatusBanner";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
-import { PhoneIcon, FormIcon, PoundIcon, ReceiptIcon, VisitsIcon, PercentIcon, TyreIcon } from "@/components/Icons";
+import { PhoneIcon, FormIcon, PoundIcon, ReceiptIcon, VisitsIcon, PercentIcon } from "@/components/Icons";
 import { getDashboardData } from "@/lib/dashboard";
 import { DEFAULT_RANGE, isRangeId, resolveRange, PROPERTY_TIMEZONE, type ResolvedRange } from "@/lib/ranges";
 import { PROPERTY_LABEL } from "@/lib/config";
@@ -36,11 +37,19 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           <div className="max-w-6xl mx-auto flex flex-col gap-2.5">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="icon-chip shrink-0">
-                  <TyreIcon size={17} />
-                </span>
+                <Image
+                  src="/creations-logo.png"
+                  alt="Creations"
+                  width={300}
+                  height={60}
+                  priority
+                  className="h-6 sm:h-7 w-auto shrink-0 rounded-[3px]"
+                />
+                {/* The logo already carries the brand name, so on narrow screens
+                    the heading is left to screen readers and the space goes to
+                    the period instead. */}
                 <div className="min-w-0">
-                  <h1 className="text-[15px] sm:text-base font-semibold leading-tight truncate text-primary">
+                  <h1 className="sr-only sm:not-sr-only text-[15px] sm:text-base font-semibold leading-tight truncate text-primary">
                     {PROPERTY_LABEL}
                   </h1>
                   <p className="text-[11px] sm:text-xs text-muted truncate">
