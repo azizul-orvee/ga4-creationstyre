@@ -1,80 +1,94 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Palette. Series colours come from the dataviz palette and are validated for
-   colour-blind separation and contrast against both surfaces — don't re-pick
-   them by eye. Tokens live on :root so any element can use them, dark mode is
-   chosen deliberately rather than flipped automatically.
+   Palette. Taken from creationsmobiletyres.co.uk: deep navy as the primary,
+   the logo's red as the accent, on a cool off-white. Series colours are the two
+   brand colours because the chart only ever separates two things; they are
+   validated for colour-blind separation and contrast against both surfaces —
+   don't re-pick them by eye. Tokens live on :root so any element can use them.
+
+   The dashboard is always light, because that is the brand's own scheme and the
+   one the main site serves — the device's dark preference is ignored on purpose.
+   The dark set below is kept, wired to data-theme="dark" on <html>, so it can be
+   switched back on without rebuilding the palette.
    --------------------------------------------------------------------------- */
 
 :root {
   color-scheme: light;
 
-  --canvas: #f4f4f1;
-  --surface-1: #fcfcfb;
-  --surface-2: #f0efea;
+  /* The brand itself, for anything that should read as Creations rather than
+     as data: the header rule, the selected range, icon chips. */
+  --brand: #162a50;
+  --brand-deep: #0e1d3a;
+  --brand-accent: #cc2014;
 
-  --text-primary: #0b0b0b;
-  --text-secondary: #52514e;
-  --text-muted: #898781;
+  --canvas: #f5f7f9;
+  --surface-1: #ffffff;
+  --surface-2: #eef2f7;
 
-  --gridline: #e1e0d9;
-  --baseline: #c3c2b7;
-  --border: rgba(11, 11, 11, 0.11);
+  --text-primary: #142031;
+  --text-secondary: #435066;
+  --text-muted: #77839a;
 
-  --series-1: #2a78d6; /* phone calls */
-  --series-2: #eb6834; /* form enquiries */
-  --series-3: #1baf7a;
+  --gridline: #e2e7ef;
+  --baseline: #c2cbd9;
+  --border: rgba(20, 32, 49, 0.12);
 
-  --seq-100: #cde2fb;
-  --seq-250: #86b6ef;
-  --seq-450: #2a78d6;
+  --series-1: #1e3f73; /* phone calls — brand navy, lifted so bars read at 8px */
+  --series-2: #cc2014; /* form enquiries — brand red */
+  --series-3: #0f7b5f;
 
-  --status-good: #006300;
-  --status-good-bg: rgba(0, 99, 0, 0.1);
-  --status-warning: #fab219;
-  --status-warning-bg: rgba(250, 178, 25, 0.16);
-  --status-critical: #c62f2f;
-  --status-critical-bg: rgba(198, 47, 47, 0.1);
+  --seq-100: #d5ddec;
+  --seq-250: #7e93b8;
+  --seq-450: #1e3f73;
 
-  --chip-bg: rgba(42, 120, 214, 0.1);
-  --chip-fg: #1c5cab;
+  --status-good: #0e7a3c;
+  --status-good-bg: rgba(14, 122, 60, 0.1);
+  --status-warning: #a75c07;
+  --status-warning-bg: rgba(167, 92, 7, 0.12);
+  --status-critical: #b3170f;
+  --status-critical-bg: rgba(179, 23, 15, 0.1);
+
+  --chip-bg: rgba(30, 63, 115, 0.1);
+  --chip-fg: #1e3f73;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) {
-    color-scheme: dark;
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-    --canvas: #0d0d0d;
-    --surface-1: #1a1a19;
-    --surface-2: #232322;
+  --brand: #1e3f73;
+  --brand-deep: #0b1626;
+  --brand-accent: #ea4a39;
 
-    --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted: #918f89;
+  --canvas: #090f17;
+  --surface-1: #0f1926;
+  --surface-2: #1a2536;
 
-    --gridline: #2c2c2a;
-    --baseline: #383835;
-    --border: rgba(255, 255, 255, 0.12);
+  --text-primary: #f8fafc;
+  --text-secondary: #b4c0d0;
+  --text-muted: #7f8da1;
 
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --series-3: #199e70;
+  --gridline: #22304a;
+  --baseline: #33445f;
+  --border: rgba(255, 255, 255, 0.12);
 
-    --seq-100: #0d366b;
-    --seq-250: #1c5cab;
-    --seq-450: #3987e5;
+  --series-1: #6096e8;
+  --series-2: #ea4a39;
+  --series-3: #2fb489;
 
-    --status-good: #35b135;
-    --status-good-bg: rgba(12, 163, 12, 0.16);
-    --status-warning: #fab219;
-    --status-warning-bg: rgba(250, 178, 25, 0.18);
-    --status-critical: #f16d6d;
-    --status-critical-bg: rgba(208, 59, 59, 0.18);
+  --seq-100: #17305b;
+  --seq-250: #2e5a9e;
+  --seq-450: #6096e8;
 
-    --chip-bg: rgba(57, 135, 229, 0.16);
-    --chip-fg: #86b6ef;
-  }
+  --status-good: #3fbf6a;
+  --status-good-bg: rgba(63, 191, 106, 0.16);
+  --status-warning: #f5b942;
+  --status-warning-bg: rgba(245, 185, 66, 0.16);
+  --status-critical: #f2695c;
+  --status-critical-bg: rgba(242, 105, 92, 0.16);
+
+  --chip-bg: rgba(96, 150, 232, 0.16);
+  --chip-fg: #a8c4f2;
 }
 
 /* Tailwind utilities built from the tokens above: `inline` keeps the var()
@@ -92,8 +106,13 @@
   --color-forms: var(--series-2);
   --color-good: var(--status-good);
   --color-bad: var(--status-critical);
+  --color-brand: var(--brand);
+  --color-accent: var(--brand-accent);
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Space Grotesk and Inter are the two faces the main site uses; the fallbacks
+     are what renders in the moment before they load. */
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", monospace;
 }
 
@@ -111,9 +130,33 @@ body {
   overflow-x: hidden;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
 .card {
   background: var(--surface-1);
   border-color: var(--border);
+}
+
+/* The theme toggle keeps both icons in the markup and lets CSS pick between
+   them. The server has no way of knowing which theme the browser will choose,
+   so deciding in CSS is what stops the button rendering one icon and then
+   swapping to the other a moment later. Each icon offers the theme you are not
+   in: the sun only appears once it is dark. */
+:root:not([data-theme="dark"]) .icon-sun,
+:root[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+/* The navy-to-red rule across the top of the header, lifted from the site's
+   hero. It is the only place the pure brand colours appear at full strength,
+   so they stay a signature rather than competing with the data. */
+.brand-rule {
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-deep), var(--brand) 45%, var(--brand-accent));
 }
 
 /* The small tinted square an icon sits in, at the head of every card. */
@@ -126,6 +169,25 @@ body {
   border-radius: 9px;
   background: var(--chip-bg);
   color: var(--chip-fg);
+}
+
+/* The login form's inputs. Focus is drawn in the brand colour rather than left
+   to the browser, whose default ring is a blue that belongs to nobody — and on
+   a sign-in screen the focused field is the whole interface. */
+.field {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+.field::placeholder {
+  color: var(--text-muted);
 }
 
 /* Horizontal scrollers (the range pills, the campaign table) keep their scroll

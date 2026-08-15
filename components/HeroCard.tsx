@@ -18,7 +18,10 @@ export default function HeroCard({ data }: { data: DashboardData }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-[13px] font-medium text-secondary">Total enquiries</h2>
-          <div className="text-[52px] sm:text-[64px] font-semibold leading-[1.05] tracking-tight text-primary">
+          {/* No negative tracking: Space Grotesk draws its 1 with a flag that
+              overhangs the stem to the left, so tightening the spacing runs the
+              digits of a figure like 1,110 into each other. */}
+          <div className="font-heading text-[52px] sm:text-[64px] font-bold leading-[1.05] text-primary">
             {formatNumber(total)}
           </div>
         </div>

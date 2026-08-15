@@ -26,7 +26,9 @@ export default function StatTile({ label, hint, value, deltaPct, comparison, goo
 
       {/* Proportional figures: tabular-nums pads digits to a zero's width, which
           looks gappy at this size. It is kept for the table columns instead. */}
-      <div className="text-[26px] sm:text-[28px] font-semibold leading-none tracking-tight text-primary">{value}</div>
+      {/* Tracking left alone for the same reason as the hero figure: negative
+          spacing collides the flag of Space Grotesk's 1 with the digit before it. */}
+      <div className="font-heading text-[26px] sm:text-[28px] font-bold leading-none text-primary">{value}</div>
 
       <DeltaChip deltaPct={deltaPct} goodDirection={goodDirection} comparison={comparison} />
 

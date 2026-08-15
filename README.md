@@ -19,6 +19,8 @@ All of it lives in `.env.local`.
 
 | Variable | Required | What it does |
 | --- | --- | --- |
+| `DASHBOARD_PASSWORD` | yes | The one password that opens the dashboard. |
+| `AUTH_SECRET` | yes | Signs the session cookie. Generate with `openssl rand -base64 32`. |
 | `GA4_PROPERTY_ID` | yes | Numeric GA4 property ID. |
 | `GA4_SERVICE_ACCOUNT_KEY_JSON` | on deploy | The whole service-account JSON key, pasted as one value. Preferred on Vercel. |
 | `GA4_SERVICE_ACCOUNT_KEY_PATH` | local only | Path to the key file, used when the JSON variable is absent. |
@@ -78,8 +80,24 @@ counts is worse than a client seeing an honest error.
   selected range, which drops that padding. Removing that guard silently doubles the
   length of the chart.
 
-## Not included
+## Who can see it
 
-There is **no authentication**. Anyone with the URL sees the client's figures, and
-that applies to `/api/dashboard` too. Put it behind access control before sharing
-the link widely.
+One account, no sign-up, no user list. The name is fixed in `lib/session.ts` and
+the password lives in `DASHBOARD_PASSWORD`; there is nothing else to manage.
+
+- **Nothing renders before sign-in.** `proxy.ts` turns anonymous requests away
+  before a page is built, so an unauthenticated visitor never costs a GA4 call.
+- **The gate is checked twice.** The page, `/api/dashboard` and the refresh
+  action each verify the session themselves, so a route added later is protected
+  whether or not the proxy's matcher is updated to match.
+- **The session is a signed cookie** — HMAC-SHA256 over a name and an expiry, no
+  store and no dependency. It is `HttpOnly`, `SameSite=Lax`, and `Secure`
+  whenever the request arrived over https.
+- **"Remember this device"** is ticked by default and lasts 90 days, renewed on
+  use so an active client is never signed out mid-month. Unticked, the cookie
+  dies with the browser session and the token expires after 12 hours.
+- **Wrong passwords are rationed** to 8 attempts per address per 15 minutes.
+
+Changing `DASHBOARD_PASSWORD` signs nobody out. Changing `AUTH_SECRET` invalidates
+every existing session immediately — that is the way to force a sign-out
+everywhere, and to do after the password has been shared over something lossy.

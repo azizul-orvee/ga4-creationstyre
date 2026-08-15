@@ -7,8 +7,10 @@ import CampaignBreakdown from "@/components/CampaignBreakdown";
 import InsightCards from "@/components/InsightCards";
 import RangePicker from "@/components/RangePicker";
 import RefreshButton from "@/components/RefreshButton";
+import SignOutButton from "@/components/SignOutButton";
 import StatusBanner from "@/components/StatusBanner";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import { requireSession } from "@/lib/auth";
 import { PhoneIcon, FormIcon, PoundIcon, ReceiptIcon, VisitsIcon, PercentIcon } from "@/components/Icons";
 import { getDashboardData } from "@/lib/dashboard";
 import { DEFAULT_RANGE, isRangeId, resolveRange, PROPERTY_TIMEZONE, type ResolvedRange } from "@/lib/ranges";
@@ -17,6 +19,10 @@ import { buildInsights } from "@/lib/insights";
 import { formatClock, formatDayLong, formatMoney, formatNumber, formatPercent } from "@/lib/format";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
+  // Checked here as well as in the proxy, so nothing is fetched from Google
+  // Analytics — let alone rendered — for someone who isn't signed in.
+  await requireSession();
+
   const requested = (await searchParams).range;
   const rangeId = isRangeId(requested) ? requested : DEFAULT_RANGE;
   const range = resolveRange(rangeId);
@@ -30,6 +36,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           thumb away instead of a scroll back to the top. It renders without
           waiting for Google Analytics, so the page is never blank. */}
       <header className="sticky top-0 z-20 border-b" style={{ borderColor: "var(--border)" }}>
+        <div className="brand-rule" aria-hidden="true" />
         <div
           className="backdrop-blur-md px-4 pt-3 pb-2.5 sm:px-6"
           style={{ background: "color-mix(in srgb, var(--canvas) 88%, transparent)" }}
@@ -57,7 +64,13 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                   </p>
                 </div>
               </div>
-              <RefreshButton />
+              {/* items-start, not center: the refresh button carries a status
+                  line under it, and the two buttons should line up by their
+                  tops rather than float against that extra height. */}
+              <div className="flex items-start gap-2 shrink-0">
+                <RefreshButton />
+                <SignOutButton />
+              </div>
             </div>
 
             <RangePicker active={rangeId} />

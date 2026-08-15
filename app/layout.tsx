@@ -1,5 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+// The same pairing the main site uses: Space Grotesk for headings and figures,
+// Inter for everything else. Self-hosted by next/font, so no request to Google.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Enquiries & Ad Spend",
@@ -14,15 +20,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Fills the notch area on phones instead of leaving black bars.
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d0d0d" },
-  ],
+  // One value rather than a pair keyed to the device preference: the dashboard
+  // is always in the light brand theme, whatever the phone is set to.
+  themeColor: "#f5f7f9",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB" className="h-full antialiased">
+    <html lang="en-GB" className={`h-full antialiased ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

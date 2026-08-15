@@ -132,6 +132,93 @@ export function bestDay(series: TimePoint[], granularity: "hour" | "day"): Insig
   };
 }
 
+/** Budget that bought nothing at all. These campaigns are invisible to
+ *  `campaignValue` below, which can only rank campaigns that converted — so
+ *  without this the worst performer of the lot is the one that never gets
+ *  named.
+ *
+ *  A campaign is only called out once it has spent more than an enquiry
+ *  normally costs. Below that it has not had a fair chance yet, and a couple of
+ *  pounds with nothing to show is not news.
+ *
+ *  Nothing is said at all about a period still in progress. GA4 records a
+ *  campaign's spend and its visits promptly but resolves the campaign behind a
+ *  conversion later, so today's enquiries sit under "(not set)" for a while and
+ *  every campaign looks dead. On a day measured mid-flight the best campaign on
+ *  the account reads as hundreds of pounds wasted, and of everything on this
+ *  page this is the card that must not cry wolf. */
+export function wastedSpend(campaigns: CampaignRow[], currency: string, periodInProgress: boolean): Insight | null {
+  if (periodInProgress) return null;
+
+  const paid = campaigns.filter((c) => c.isPaid && c.cost > 0);
+  const earning = paid.filter((c) => c.conversions > 0);
+  if (!earning.length) return null;
+
+  // What an enquiry costs on the campaigns that are working, which is the fair
+  // benchmark for the ones that are not.
+  const spent = earning.reduce((sum, c) => sum + c.cost, 0);
+  const won = earning.reduce((sum, c) => sum + c.conversions, 0);
+  const usual = spent / won;
+  if (!Number.isFinite(usual) || usual <= 0) return null;
+
+  const dead = paid.filter((c) => c.conversions === 0 && c.cost >= usual).sort((a, b) => b.cost - a.cost);
+  if (!dead.length) return null;
+
+  const worst = dead[0];
+  if (dead.length === 1) {
+    return {
+      kind: "warning",
+      title: `Nothing back from ${worst.campaign}`,
+      detail: `${formatMoney(worst.cost, currency)} spent without a single enquiry, when one usually costs you ${formatMoney(usual, currency, 2)}.`,
+    };
+  }
+
+  const wasted = dead.reduce((sum, c) => sum + c.cost, 0);
+  return {
+    kind: "warning",
+    title: `${dead.length} campaigns brought nothing back`,
+    detail: `${formatMoney(wasted, currency)} spent between them without a single enquiry. The largest is ${worst.campaign} at ${formatMoney(worst.cost, currency)}.`,
+  };
+}
+
+/** Which day of the week turns budget into enquiries most cheaply — the one
+ *  finding on this page that says where to move money rather than where to be
+ *  ready for the phone.
+ *
+ *  A weekday only takes part once it has come round at least twice and carries
+ *  enough enquiries to divide by: a Tuesday with three of them can produce any
+ *  cost per enquiry you like. That rules the card out on short ranges, which is
+ *  the intention — a week gives one of each day and proves nothing. */
+export function weekdayValue(series: TimePoint[], granularity: "hour" | "day", currency: string): Insight | null {
+  if (granularity === "hour") return null;
+
+  const byDay = WEEKDAYS.map(() => ({ cost: 0, enquiries: 0, days: 0 }));
+  for (const point of series) {
+    const bucket = byDay[weekdayOf(point.key)];
+    bucket.cost += point.cost ?? 0;
+    bucket.enquiries += total(point);
+    bucket.days += 1;
+  }
+
+  const comparable = byDay
+    .map((b, day) => ({ day, perEnquiry: b.enquiries ? b.cost / b.enquiries : 0, ...b }))
+    .filter((b) => b.days >= 2 && b.enquiries >= 10 && b.cost > 0);
+  if (comparable.length < 3) return null;
+
+  const cheapest = comparable.reduce((a, b) => (b.perEnquiry < a.perEnquiry ? b : a));
+  const dearest = comparable.reduce((a, b) => (b.perEnquiry > a.perEnquiry ? b : a));
+
+  // Days within a quarter of each other are the same day as far as a budget is
+  // concerned, and there is nothing to move.
+  if (dearest.perEnquiry < cheapest.perEnquiry * 1.25) return null;
+
+  return {
+    kind: "value",
+    title: `${WEEKDAYS[cheapest.day]}s buy enquiries cheapest`,
+    detail: `${formatMoney(cheapest.perEnquiry, currency, 2)} each on a ${WEEKDAYS[cheapest.day]}, against ${formatMoney(dearest.perEnquiry, currency, 2)} on a ${WEEKDAYS[dearest.day]}, your dearest day.`,
+  };
+}
+
 /** Cheapest and most expensive campaigns, which is where the client can act. */
 export function campaignValue(campaigns: CampaignRow[], currency: string): Insight[] {
   // A couple of conversions is not enough to call a campaign good or bad.
@@ -169,12 +256,24 @@ export function campaignValue(campaigns: CampaignRow[], currency: string): Insig
 
 export function buildInsights(data: DashboardData): Insight[] {
   const list: Insight[] = [];
+
+  // Money first. The timing and best-day cards are the ones people enjoy
+  // reading; these two are the ones that change what happens to the budget
+  // today, so they lead.
+  const wasted = wastedSpend(data.campaigns, data.currency, data.range.includesToday);
+  if (wasted) list.push(wasted);
+
+  const weekday = weekdayValue(data.series, data.granularity, data.currency);
+  if (weekday) list.push(weekday);
+
   const timing = data.granularity === "hour" ? busiestHours(data.series) : busiestWeekday(data.series);
   if (timing) list.push(timing);
 
   const peak = bestDay(data.series, data.granularity);
   if (peak) list.push(peak);
 
+  // Room for six rather than four: the two additions above would otherwise push
+  // the campaign value cards off a page that already earns its keep with them.
   list.push(...campaignValue(data.campaigns, data.currency));
-  return list.slice(0, 4);
+  return list.slice(0, 6);
 }
