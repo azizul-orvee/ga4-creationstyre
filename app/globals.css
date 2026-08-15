@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Palette. Series colours come from the dataviz palette and are validated for
+   colour-blind separation and contrast against both surfaces — don't re-pick
+   them by eye. Tokens live on :root so any element can use them, dark mode is
+   chosen deliberately rather than flipped automatically.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --canvas: #f4f4f1;
+  --surface-1: #fcfcfb;
+  --surface-2: #f0efea;
+
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+
+  --gridline: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.11);
+
+  --series-1: #2a78d6; /* phone calls */
+  --series-2: #eb6834; /* form enquiries */
+  --series-3: #1baf7a;
+
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-450: #2a78d6;
+
+  --status-good: #006300;
+  --status-good-bg: rgba(0, 99, 0, 0.1);
+  --status-warning: #fab219;
+  --status-warning-bg: rgba(250, 178, 25, 0.16);
+  --status-critical: #c62f2f;
+  --status-critical-bg: rgba(198, 47, 47, 0.1);
+
+  --chip-bg: rgba(42, 120, 214, 0.1);
+  --chip-fg: #1c5cab;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
+    --canvas: #0d0d0d;
+    --surface-1: #1a1a19;
+    --surface-2: #232322;
+
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #918f89;
+
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.12);
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+
+    --seq-100: #0d366b;
+    --seq-250: #1c5cab;
+    --seq-450: #3987e5;
+
+    --status-good: #35b135;
+    --status-good-bg: rgba(12, 163, 12, 0.16);
+    --status-warning: #fab219;
+    --status-warning-bg: rgba(250, 178, 25, 0.18);
+    --status-critical: #f16d6d;
+    --status-critical-bg: rgba(208, 59, 59, 0.18);
+
+    --chip-bg: rgba(57, 135, 229, 0.16);
+    --chip-fg: #86b6ef;
+  }
+}
+
+/* Tailwind utilities built from the tokens above: `inline` keeps the var()
+   reference, so every utility follows the theme instead of freezing a value. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-line: var(--border);
+  --color-gridline: var(--gridline);
+  --color-calls: var(--series-1);
+  --color-forms: var(--series-2);
+  --color-good: var(--status-good);
+  --color-bad: var(--status-critical);
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", monospace;
+}
+
+html {
+  /* Stops iOS Safari inflating text in landscape. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  /* Nothing on this page scrolls sideways; only the pill row and wide tables do,
+     and they say so themselves. */
+  overflow-x: hidden;
+}
+
+.card {
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+
+/* The small tinted square an icon sits in, at the head of every card. */
+.icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+}
+
+/* Horizontal scrollers (the range pills, the campaign table) keep their scroll
+   without showing a bar over the content on mobile. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Phones with a home indicator: keep the last card clear of it. */
+.safe-bottom {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
