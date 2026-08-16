@@ -41,7 +41,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           className="backdrop-blur-md px-4 pt-3 pb-2.5 sm:px-6"
           style={{ background: "color-mix(in srgb, var(--canvas) 88%, transparent)" }}
         >
-          <div className="max-w-6xl mx-auto flex flex-col gap-2.5">
+          <div className="max-w-6xl mx-auto flex flex-col gap-2.5 min-w-0 w-full">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <Image

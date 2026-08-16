@@ -20,7 +20,7 @@ export default function InsightCards({ insights }: { insights: Insight[] }) {
               <Icon size={16} />
             </span>
             <div className="min-w-0">
-              <h3 className="text-[13px] font-semibold leading-snug text-primary">{insight.title}</h3>
+              <h3 className="text-[13px] font-semibold leading-snug text-primary break-words">{insight.title}</h3>
               <p className="text-xs mt-1 leading-relaxed text-secondary">{insight.detail}</p>
             </div>
           </div>

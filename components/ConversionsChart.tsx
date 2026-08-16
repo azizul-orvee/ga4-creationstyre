@@ -205,9 +205,11 @@ export default function ConversionsChart({ data, currency, granularity }: Props)
         </div>
       </div>
 
-      {/* The same numbers as a table, for screen readers and anyone who would
-          rather read the values than the bars. */}
-      <table className="sr-only">
+      {/* Wrapped, not classed on the table: display:table ignores the 1px width
+          sr-only sets, so the columns used to push the whole page 15px wider
+          than the phone and the dashboard would rubber-band sideways. */}
+      <div className="sr-only">
+      <table>
         <caption>{hourly ? "Enquiries by hour" : "Enquiries per day"}</caption>
         <thead>
           <tr>
@@ -228,6 +230,7 @@ export default function ConversionsChart({ data, currency, granularity }: Props)
           ))}
         </tbody>
       </table>
+      </div>
     </section>
   );
 }

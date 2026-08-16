@@ -119,15 +119,17 @@
 html {
   /* Stops iOS Safari inflating text in landscape. */
   -webkit-text-size-adjust: 100%;
+  /* clip, not hidden: hidden also computes overflow-y to auto, which would
+     steal sticky from the header. clip just forbids the page from growing
+     sideways when a child (the range pills, a visually-hidden table) is wide. */
+  overflow-x: clip;
 }
 
 body {
   background: var(--canvas);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  /* Nothing on this page scrolls sideways; only the pill row and wide tables do,
-     and they say so themselves. */
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1,

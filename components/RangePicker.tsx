@@ -48,7 +48,7 @@ export default function RangePicker({ active }: Props) {
     <div className="flex items-center gap-2 min-w-0">
       <div
         ref={scroller}
-        className="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 py-0.5"
+        className="flex items-center gap-1.5 overflow-x-auto no-scrollbar min-w-0 w-full -mx-4 px-4 sm:mx-0 sm:px-0 py-0.5"
         role="group"
         aria-label="Date range"
         style={{ opacity: isPending ? 0.65 : 1, transition: "opacity 120ms" }}
